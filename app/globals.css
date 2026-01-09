@@ -109,7 +109,7 @@ body {
 }
 
 .title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: var(--text-xl);
   font-weight: 700;
   color: var(--text-primary);
@@ -248,7 +248,7 @@ body {
 }
 
 .error-content h2 {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   margin-bottom: var(--space-sm);
   color: var(--text-primary);
 }
