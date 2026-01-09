@@ -7,13 +7,17 @@
 const CONFIG = {
     STORAGE_KEY: 'scratchpad_notes',
     AUTOSAVE_DELAY: 500, // ms
-    SAVE_STATUS_DISPLAY_DURATION: 2000 // ms
+    SAVE_STATUS_DISPLAY_DURATION: 2000, // ms
+    THEME_KEY: 'scratchpad_theme'
 };
 
 // DOM Elements
 const notepad = document.getElementById('notepad');
 const saveIndicator = document.getElementById('saveIndicator');
 const saveStatus = document.getElementById('saveStatus');
+const themeToggle = document.getElementById('themeToggle');
+const iconSun = document.querySelector('.icon-sun');
+const iconMoon = document.querySelector('.icon-moon');
 const errorModal = document.getElementById('errorModal');
 const closeErrorBtn = document.getElementById('closeError');
 
@@ -58,10 +62,10 @@ function updateSaveStatus(status) {
         clearTimeout(statusTimeout);
         statusTimeout = null;
     }
-    
+
     // Remove all status classes
     saveIndicator.classList.remove('saving', 'saved', 'error');
-    
+
     switch (status) {
         case 'saving':
             saveStatus.textContent = 'Saving...';
@@ -94,14 +98,14 @@ function saveNotes() {
         showError();
         return;
     }
-    
+
     try {
         const content = notepad.value;
         localStorage.setItem(CONFIG.STORAGE_KEY, content);
         updateSaveStatus('saved');
     } catch (e) {
         console.error('Error saving to localStorage:', e);
-        
+
         // Check if it's a quota exceeded error
         if (e.name === 'QuotaExceededError') {
             updateSaveStatus('error');
@@ -120,7 +124,7 @@ function loadNotes() {
         showError();
         return;
     }
-    
+
     try {
         const savedNotes = localStorage.getItem(CONFIG.STORAGE_KEY);
         if (savedNotes !== null) {
@@ -141,12 +145,12 @@ function loadNotes() {
 function handleInput() {
     // Show saving status immediately
     updateSaveStatus('saving');
-    
+
     // Clear existing timeout
     if (saveTimeout) {
         clearTimeout(saveTimeout);
     }
-    
+
     // Set new timeout for debounced save
     saveTimeout = setTimeout(() => {
         saveNotes();
@@ -175,33 +179,73 @@ function setCursorToEnd() {
 }
 
 /**
+ * Update Theme UI
+ */
+function updateThemeUI(isDark) {
+    if (isDark) {
+        iconSun.style.display = 'none';
+        iconMoon.style.display = 'block';
+        document.body.classList.add('dark-mode');
+    } else {
+        iconSun.style.display = 'block';
+        iconMoon.style.display = 'none';
+        document.body.classList.remove('dark-mode');
+    }
+}
+
+/**
+ * Handle Theme Toggle
+ */
+function handleThemeToggle() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const newIsDark = !isDark;
+
+    updateThemeUI(newIsDark);
+    localStorage.setItem(CONFIG.THEME_KEY, newIsDark ? 'dark' : 'light');
+}
+
+/**
+ * Initialize Theme
+ */
+function initTheme() {
+    const savedTheme = localStorage.getItem(CONFIG.THEME_KEY);
+    // Default to light (Coda style) if not set
+    const isDark = savedTheme === 'dark';
+    updateThemeUI(isDark);
+}
+
+/**
  * Initialize the application
  */
 function init() {
+    // Initialize Theme
+    initTheme();
+
     // Check localStorage availability
     if (!isLocalStorageAvailable()) {
         showError();
         return;
     }
-    
+
     // Load saved notes
     loadNotes();
-    
+
     // Focus the textarea
     notepad.focus();
-    
+
     // Set cursor to end of text
     setCursorToEnd();
-    
+
     // Event Listeners
     notepad.addEventListener('input', handleInput);
-    
+    themeToggle.addEventListener('click', handleThemeToggle);
+
     // Listen for storage events from other tabs
     window.addEventListener('storage', handleStorageEvent);
-    
+
     // Close error modal
     closeErrorBtn.addEventListener('click', hideError);
-    
+
     // Save on page unload (backup in case debounce hasn't fired)
     window.addEventListener('beforeunload', () => {
         if (saveTimeout) {
@@ -209,7 +253,7 @@ function init() {
             saveNotes();
         }
     });
-    
+
     // Handle visibility change (save when tab becomes hidden)
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && saveTimeout) {
