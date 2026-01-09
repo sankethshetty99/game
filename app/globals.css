@@ -31,6 +31,10 @@
   --space-lg: 24px;
   --space-xl: 32px;
 
+  /* Typography */
+  --font-sans: 'DM Sans', -apple-system, sans-serif;
+  --font-serif: 'DM Sans', -apple-system, sans-serif;
+
   /* Typography - Sizes */
   --text-xs: 12px;
   --text-sm: 14px;
