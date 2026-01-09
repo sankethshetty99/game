@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratchpad - Your Personal Notes</title>
+    <meta name="description" content="A simple, persistent scratchpad for your thoughts. Your notes are automatically saved in your browser.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Scratchpad</h1>
+            <div class="save-indicator" id="saveIndicator">
+                <span class="save-status" id="saveStatus">Loaded</span>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <textarea 
+                id="notepad" 
+                class="notepad" 
+                placeholder="Start typing... your notes auto-save ✨"
+                aria-label="Note-taking area"
+                spellcheck="true"
+            ></textarea>
+        </main>
+        
+        <div class="error-modal" id="errorModal" style="display: none;">
+            <div class="error-content">
+                <h2>localStorage Unavailable</h2>
+                <p>This app requires browser storage to save your notes. Please ensure localStorage is enabled in your browser settings.</p>
+                <button id="closeError" class="error-button">Got it</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
